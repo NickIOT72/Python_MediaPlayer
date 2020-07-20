@@ -15,6 +15,7 @@ from screens.templates.Windows_Dim import  WindowDim
 import os
 import cv2
 from PIL import Image
+from screens.templates.Button_Layout import ButtonTemplate
 
 #04246134112
 #04146210791
@@ -58,41 +59,9 @@ class HomePage(Screen):
         Rectangle(pos=LabelFooterBackground.pos, size=LabelFooterBackground.size)
     
     ##########################Creatr Button Layout################################## 
-    ButtonLayout = FloatLayout(
-        pos = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 ), 
-        size = (WindowDim.Wsize_X*0.13 , WindowDim.Wsize_Y*0.1 ),
-    )
-    with ButtonLayout.canvas:
-        Color(rgba = ColorList.LightSeaGreen.rgba )
-        Rectangle(pos=ButtonLayout.pos, size=ButtonLayout.size)
-    #Image processing
-    path = os.getcwd()
-    print(path)
-    ButtonPlayPath = path + '\screens\images\PlayButton_Down.png'
-    ButtonPlayPath2 = path + '\screens\images\PlayButton_Down_2.png'
-    ButtonPlayPathOn = path + '\screens\images\PlayButton_On.png'
-    ButtonPlayPathOn2 = path + '\screens\images\PlayButton_On_2.png'
-    # Resize Image
-    im = Image.open(ButtonPlayPath)
-    newsize = (int(ButtonLayout.width), int(ButtonLayout.height))
-    # resize image
-    new_image = im.resize(newsize)
-    new_image.save(ButtonPlayPath2)
-    # Resize Image
-    im = Image.open(ButtonPlayPathOn)
-    newsize = (int(ButtonLayout.width), int(ButtonLayout.height))
-    # resize image
-    new_image = im.resize(newsize)
-    new_image.save(ButtonPlayPathOn2)
-    ButtonPlay = Button(
-        size_hint = (None,None),
-        size = ButtonLayout.size,
-        pos_hint = ButtonLayout.pos_hint,
-        pos = ButtonLayout.pos,
-        background_normal = ButtonPlayPath2,
-        background_down = ButtonPlayPathOn2
-    )
-    ButtonLayout.add_widget(ButtonPlay)
+    
+    ButtonPlay = ButtonTemplate(0)
+
     ########################################################################
     #Create FloatLayout to insert Slider
     SliderLayout = FloatLayout(
@@ -121,7 +90,7 @@ class HomePage(Screen):
     layout.add_widget(LabelTitle)
     layout.add_widget(LabelBodyBackground)
     layout.add_widget(LabelFooterBackground)
-    layout.add_widget(ButtonLayout)
+    layout.add_widget(ButtonPlay)
     layout.add_widget(SliderLayout)
     
     def __init__(self, **kw):    
