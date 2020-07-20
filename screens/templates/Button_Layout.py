@@ -18,9 +18,9 @@ from PIL import Image
 
 class ButtonTemplate(FloatLayout):
 
-    def __init__(self, PathNum , **kw):
+    def __init__(self, PathNum, a , **kw):
         super(ButtonTemplate, self).__init__(**kw)
-        self.pos = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 )
+        self.pos = a
         self.size = (WindowDim.Wsize_X*0.13 , WindowDim.Wsize_Y*0.1 )
         with self.canvas:
             Color(rgba = ColorList.LightSeaGreen.rgba )
@@ -42,7 +42,7 @@ class ButtonTemplate(FloatLayout):
         ButtonPausePath2 = path + '\Pause_Button_Down.png'
         ButtonPausePath3 = path + '\Pause_Button_Down_2.png'
         ######## NextRight Button
-        ButtonNextRightPath0 = path + '\RowNextRight_Button_Down.png'
+        ButtonNextRightPath0 = path + '\RowNextRight_Button_Normal.png'
         ButtonNextRightPath1 = path + '\RowNextRight_Button_Normal_2.png'
         ButtonNextRightPath2 = path + '\RowNextRight_Button_Down.png'
         ButtonNextRightPath3 = path + '\RowNextRight_Button_Down_2.png'

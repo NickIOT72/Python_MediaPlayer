@@ -15,3 +15,7 @@ class ColorList():
     BlueIvy = ColorCreation('3090C7')
     LightSeaGreen = ColorCreation("3EA99F")
     White = ColorCreation("FFFFFF")
+    MarbleBlue = ColorCreation("566D7E")
+    Red = ColorCreation("FF0000")
+    DarkBlue = ColorCreation("0000A0")
+    LightBlue = ColorCreation("ADD8E6")
