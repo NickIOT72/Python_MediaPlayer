@@ -1,0 +1,20 @@
+Abre la Git Bash.
+Cambiar el directorio de trabajo actual en tu proyecto local.
+Inicializar el directorio local como un repositorio de Git.
+$ git init
+Agregar los archivos a tu nuevo repositorio local. Esto representa la primera confirmación.
+$ git add .
+# Agrega el archivo en el repositorio local y lo presenta para la confirmación. Para deshacer un archivo, usa 'git reset HEAD YOUR-FILE'.
+Confirmar los archivos que has preparado en tu repositorio local.
+$ git commit -m "First commit"
+# Commits the tracked changes and prepares them to be pushed to a remote repository. Para eliminar esta confirmación y modificar el archivo, usa 'git reset --soft HEAD~1' y confirma y agrega nuevamente el archivo.
+En la parte superior de la página de Configuración rápida del repositorio de GitHub, haz clic en  para copiar la URL del repositorio remoto.
+Copiar el campo de URL de repositorio remoto
+En la indicación Command (Comando), agrega la URL para el repositorio remoto donde se subirá tu repositorio local.
+$ git remote add origin remote repository URL
+# Sets the new remote
+$ git remote -v
+# Verifies the new remote URL
+Sube los cambios en tu repositorio local a GitHub.
+$ git push origin master
+# Pushes the changes in your local repository up to the remote repository you sp

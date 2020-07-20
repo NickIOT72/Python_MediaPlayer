@@ -1,0 +1,14 @@
+//Verificar Version de Python
+pip -h
+
+//Instalan paquete de virtualenv
+pip install virtualenv
+
+//Inciar entorno virtual. mypython puede reemplazarse con otro nombre
+virtualenv PythonMusicP
+
+//Activar Virtual enviromente
+PythonMusicP\Scripts\activate
+
+//Desactivar
+deactivate

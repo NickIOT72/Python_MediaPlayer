@@ -14,6 +14,7 @@ from kivy.core.window import Window # Config Window
 from screens.templates.Windows_Dim import  WindowDim
 import os
 import cv2
+from PIL import Image
 
 #04246134112
 #04146210791
@@ -55,11 +56,11 @@ class HomePage(Screen):
     with LabelFooterBackground.canvas:
         Color(rgba = ColorList.BlueIvy.CanvasRGBA )
         Rectangle(pos=LabelFooterBackground.pos, size=LabelFooterBackground.size)
-    # Creatr Slider
     
+    ##########################Creatr Button Layout################################## 
     ButtonLayout = FloatLayout(
         pos = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 ), 
-        size = (WindowDim.Wsize_X*0.2 , WindowDim.Wsize_Y*0.1 ),
+        size = (WindowDim.Wsize_X*0.13 , WindowDim.Wsize_Y*0.1 ),
     )
     with ButtonLayout.canvas:
         Color(rgba = ColorList.LightSeaGreen.rgba )
@@ -67,32 +68,39 @@ class HomePage(Screen):
     #Image processing
     path = os.getcwd()
     print(path)
-    ButtonPlayPath = path + '/screens/images/PlayButton_Down_RS.png'
+    ButtonPlayPath = path + '\screens\images\PlayButton_Down.png'
+    ButtonPlayPath2 = path + '\screens\images\PlayButton_Down_2.png'
+    ButtonPlayPathOn = path + '\screens\images\PlayButton_On.png'
+    ButtonPlayPathOn2 = path + '\screens\images\PlayButton_On_2.png'
     # Resize Image
-    img = cv2.imread(ButtonPlayPath, cv2.IMREAD_UNCHANGED)
-    scale_percent_width = float(ButtonLayout.width/img.shape[1])
-    scale_percent_height = float(ButtonLayout.height/img.shape[0])
-    width = int(img.shape[1] * scale_percent_width)
-    height = int(img.shape[0] * scale_percent_height)
-    dim = (width, height)
+    im = Image.open(ButtonPlayPath)
+    newsize = (int(ButtonLayout.width), int(ButtonLayout.height))
     # resize image
-    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-
+    new_image = im.resize(newsize)
+    new_image.save(ButtonPlayPath2)
+    # Resize Image
+    im = Image.open(ButtonPlayPathOn)
+    newsize = (int(ButtonLayout.width), int(ButtonLayout.height))
+    # resize image
+    new_image = im.resize(newsize)
+    new_image.save(ButtonPlayPathOn2)
     ButtonPlay = Button(
         size_hint = (None,None),
         size = ButtonLayout.size,
         pos_hint = ButtonLayout.pos_hint,
         pos = ButtonLayout.pos,
-        background_normal = ButtonPlayPath
+        background_normal = ButtonPlayPath2,
+        background_down = ButtonPlayPathOn2
     )
     ButtonLayout.add_widget(ButtonPlay)
+    ########################################################################
     #Create FloatLayout to insert Slider
     SliderLayout = FloatLayout(
-        pos = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.13 ), 
-        size = (WindowDim.Wsize_X*0.5 , WindowDim.Wsize_Y*0.1 ),
+        pos = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.15 ), 
+        size = (WindowDim.Wsize_X*0.5 , WindowDim.Wsize_Y*0.07 ),
     )
     with SliderLayout.canvas:
-        Color(rgba = ColorList.LightSeaGreen.rgba )
+        Color(rgba = ColorList.BlueIvy.CanvasRGBA )
         Rectangle(pos=SliderLayout.pos, size=SliderLayout.size)
     SliderMusic = Slider(
         value_track=True, 
@@ -123,11 +131,13 @@ class HomePage(Screen):
         #self.layout.add_widget(self.FadeButton(on_press=self.fadeAnimation) )
         #self.fadeAnimation()
 
-
+    '''
     def fadeAnimation(self):
         self.TabbedPanelTitleBackground.pos = (698,430)
         anim = Animation( pos = (2 ,430), duration= 3, t='out_circ')
         anim.start(self.TabbedPanelTitleBackground)
     
     def compl(self, *args, **kws):
-		print('Complete Animation')
+		pass
+        #print("Complete Animation")
+    '''
