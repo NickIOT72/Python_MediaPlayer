@@ -18,9 +18,7 @@ from PIL import Image
 
 class ButtonTemplate(FloatLayout):
 
-    ButtonD = Button()
-
-    def __init__(self, PathNum, a , **kw):
+    def __init__(self, a , **kw):
         super(ButtonTemplate, self).__init__(**kw)
         self.pos = a
         self.size = (WindowDim.Wsize_X*0.13 , WindowDim.Wsize_Y*0.1 )
@@ -28,7 +26,11 @@ class ButtonTemplate(FloatLayout):
             Color(rgba = ColorList.LightSeaGreen.rgba )
             Rectangle(pos=self.pos, size=self.size)
         
-        
+    
+class ButtonSet(Button):
+
+    def __init__(self, PathNum, FL,  **kwargs):
+        super(ButtonSet, self).__init__(**kwargs)
         ###############
 
         #Image processing
@@ -72,22 +74,19 @@ class ButtonTemplate(FloatLayout):
         Path2 = PathArray[PathNum][3]
         # Resize Image
         im = Image.open(PathArray[PathNum][0])
-        newsize = (int(self.width), int(self.height))
+        newsize = (int(FL.width), int(FL.height))
         # resize image
         new_image = im.resize(newsize)
         new_image.save(PathArray[PathNum][1])
         # Resize Image
         im = Image.open(PathArray[PathNum][2])
-        newsize = (int(self.width), int(self.height))
+        newsize = (int(FL.width), int(FL.height))
         # resize image
         new_image = im.resize(newsize)
         new_image.save(PathArray[PathNum][3])
-        self.ButtonD = Button(
-            size_hint = (None,None),
-            size = self.size,
-            pos_hint = self.pos_hint,
-            pos = self.pos,
-            background_normal = Path1,
-            background_down = Path2
-        )
-        self.add_widget(self.ButtonD)
+        self.size_hint = (None,None)
+        self.size = FL.size
+        self.pos_hint = FL.pos_hint
+        self.pos = FL.pos
+        self.background_normal = Path1
+        self.background_down = Path2

@@ -15,7 +15,7 @@ from screens.templates.Windows_Dim import  WindowDim
 import os
 import cv2
 from PIL import Image
-from screens.templates.Button_Layout import ButtonTemplate
+from screens.templates.Button_Layout import ButtonTemplate, ButtonSet
 from screens.templates.Slider_Layout import SliderTemplate
 from screens.music.music import MPS
 import pyaudio
@@ -23,7 +23,9 @@ import wave
 from pydub import AudioSegment
 import pygame, time
 from pygame import mixer 
-
+import threading
+import time
+from kivy.core.audio import SoundLoader
 #04246134112
 #04146210791
 
@@ -65,14 +67,21 @@ class HomePage(Screen):
         Color(rgba = ColorList.MarbleBlue.CanvasRGBA )
         Rectangle(pos=LabelFooterBackground.pos, size=LabelFooterBackground.size)
     ##########################Creatr Button Layout################################## 
-    MusicPlayer = MPS()
     ## Button Play Configuration
     a = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 )
-    ButtonPlay = ButtonTemplate(0, a)
-    ButtonPlay.ButtonD.bind(on_press= MusicPlayer.playmusic )
+    ButtonPlayLayout = ButtonTemplate( a)
+    ButtonPlay = ButtonSet(0, ButtonPlayLayout)
+    ButtonPlay.bind(on_press=lambda x:MusicSel.playmusic('A') )
+    ButtonPlayLayout.add_widget(ButtonPlay)
+    ## Button Stop Configuration
+    a = (ButtonPlayLayout.pos[0] + ButtonPlayLayout.width + WindowDim.Wsize_X*0.01 , ButtonPlayLayout.pos[1])
+    ButtonPauseLayout = ButtonTemplate( a)
+    ButtonPause = ButtonSet(1, ButtonPauseLayout)
+    ButtonPause.bind(on_press=lambda x:MusicSel.stopmusic('B') )
+    ButtonPauseLayout.add_widget(ButtonPause)
     #ButtonPlay.add_widget(ButtonPlay.ButtonD)
     # Button Pause Conf
-    a = (ButtonPlay.pos[0] + ButtonPlay.width + WindowDim.Wsize_X*0.01 , ButtonPlay.pos[1])
+    '''a = (ButtonPlay.pos[0] + ButtonPlay.width + WindowDim.Wsize_X*0.01 , ButtonPlay.pos[1])
     ButtonPause = ButtonTemplate(1, a)
     # Button Stop Conf
     a = (ButtonPause.pos[0] + ButtonPause.width + WindowDim.Wsize_X*0.01 , ButtonPause.pos[1])
@@ -127,28 +136,29 @@ class HomePage(Screen):
     )
     with LabelSongTrackBackground.canvas:
         Color(rgba = ColorList.LightBlue.CanvasRGBA )
-        Rectangle(pos=LabelSongTrackBackground.pos, size=LabelSongTrackBackground.size)
+        Rectangle(pos=LabelSongTrackBackground.pos, size=LabelSongTrackBackground.size)'''
     # add labels to layout
     layout.add_widget(TabbedPanelTitleBackground)
     layout.add_widget(LabelTitle)
     layout.add_widget(LabelBodyBackground)
     layout.add_widget(LabelFooterBackground)
-    layout.add_widget(ButtonPlay)
-    layout.add_widget(ButtonPause)
-    layout.add_widget(ButtonStop)
-    layout.add_widget(ButtonNextRight)
-    layout.add_widget(ButtonNextLeft)
-    layout.add_widget(SongSliderLayout)
-    layout.add_widget(VolSliderLayout)
-    layout.add_widget(LabelSongTrackBackground)
-    layout.add_widget(LabelSongTrackTitle)
-    layout.add_widget(LabelVolBackground)
-    layout.add_widget(LabelVolTitle)
+    layout.add_widget(ButtonPlayLayout)
+    layout.add_widget(ButtonPauseLayout)
+    #layout.add_widget(ButtonStop)
+    #layout.add_widget(ButtonNextRight)
+    #layout.add_widget(ButtonNextLeft)
+    #layout.add_widget(SongSliderLayout)
+    #layout.add_widget(VolSliderLayout)
+    #layout.add_widget(LabelSongTrackBackground)
+    #layout.add_widget(LabelSongTrackTitle)
+    #layout.add_widget(LabelVolBackground)
+    #layout.add_widget(LabelVolTitle)
 
     def __init__(self, **kw):    
         super(HomePage,self).__init__(**kw)
         self.add_widget(self.layout)
         self.stopmusic2()
+        MusicSel()
 
         #self.layout.add_widget(self.FadeButton(on_press=self.fadeAnimation) )
         #self.fadeAnimation()
@@ -167,3 +177,61 @@ class HomePage(Screen):
 		pass
         #print("Complete Animation")
     '''
+
+class MusicSel(object):
+
+    PrintPlay = bool
+    PrintPause = bool
+    Mus = ''
+
+    def __init__(self):
+        super(MusicSel, self).__init__()
+        self.Mus = ''
+        #t = threading.Thread(name = "Timer" , target = self.print_time('Thr',2))
+        #t.setDaemon(True)
+        #t.start()
+
+    @staticmethod
+    def playmusic(a):
+        """Stream music with mixer.music module in blocking manner.
+           This will stream the sound from disk while playing.
+        """
+        if not MusicSel.Mus:
+            path = os.getcwd() + '\screens\music\myfile.wav'
+            sound = SoundLoader.load(path)
+            MusicSel.Mus = sound
+            print(MusicSel.Mus)
+            if MusicSel.Mus and MusicSel.Mus.state == 'stop' :
+                print("Sound found at %s" % MusicSel.Mus.source)
+                print("Sound is %.3f seconds" % MusicSel.Mus.length)
+                MusicSel.Mus.play()
+            else:
+                print("Error")
+
+    @staticmethod
+    def stopmusic(a):
+        """Stream music with mixer.music module in blocking manner.
+           This will stream the sound from disk while playing.
+        """
+        if MusicSel.Mus:
+            print(MusicSel.Mus.state)
+            if MusicSel.Mus.state == 'play':
+                print("Sound found at %s" % MusicSel.Mus.source)
+                print("Stopped")
+                MusicSel.Mus.stop()
+                MusicSel.Mus = ''
+        #print("Error: unable to start thread")
+
+    @staticmethod 
+    def print_time( threadName, delay):
+        count = 0
+        while True:
+            if MusicSel.PrintPlay:
+                print("Print Play : True")
+            else:
+                print("Print Pause : False")
+            if MusicSel.PrintPause:
+                print("Print Play : True")
+            else:
+                print("Print Pause : False")
+            time.sleep(delay)

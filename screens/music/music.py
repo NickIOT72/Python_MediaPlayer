@@ -3,6 +3,8 @@ import wave
 from pydub import AudioSegment
 import pygame, time
 from pygame import mixer 
+import threading
+import time
 
 class MPS(object):
 
@@ -30,11 +32,8 @@ class MPS(object):
         """Stream music with mixer.music module in blocking manner.
            This will stream the sound from disk while playing.
         """
-        self.StatusPlay = not self.StatusPlay
-        if self.StatusPlay:
-            print("Play Button")
-        elif not self.StatusPlay:
-            print("Pause Button")
+        print(self)
+
 
     def stopmusic(self):
         """stop currently playing music"""
