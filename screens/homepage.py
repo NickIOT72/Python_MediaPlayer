@@ -17,6 +17,12 @@ import cv2
 from PIL import Image
 from screens.templates.Button_Layout import ButtonTemplate
 from screens.templates.Slider_Layout import SliderTemplate
+from screens.music.music import MPS
+import pyaudio
+import wave
+from pydub import AudioSegment
+import pygame, time
+from pygame import mixer 
 
 #04246134112
 #04146210791
@@ -42,6 +48,7 @@ class HomePage(Screen):
     with TabbedPanelTitleBackground.canvas:
         Color(rgba = ColorList.BlueIvy.CanvasRGBA )
         Rectangle(pos=TabbedPanelTitleBackground.pos, size=TabbedPanelTitleBackground.size)
+    
     #Create Body Background
     LabelBodyBackground = Label(
         pos = (WindowDim.Wsize_X*0.01 ,WindowDim.Wsize_Y*0.27), 
@@ -60,15 +67,18 @@ class HomePage(Screen):
         Rectangle(pos=LabelFooterBackground.pos, size=LabelFooterBackground.size)
     
     ##########################Creatr Button Layout################################## 
+    MusicPlayer = MPS()
     ## Button Play Configuration
     a = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 )
     ButtonPlay = ButtonTemplate(0, a)
+    ButtonPlay.bind(on_press=MusicPlayer.playmusic )
     # Button Pause Conf
     a = (ButtonPlay.pos[0] + ButtonPlay.width + WindowDim.Wsize_X*0.01 , ButtonPlay.pos[1])
     ButtonPause = ButtonTemplate(1, a)
     # Button Stop Conf
     a = (ButtonPause.pos[0] + ButtonPause.width + WindowDim.Wsize_X*0.01 , ButtonPause.pos[1])
     ButtonStop = ButtonTemplate(2,a)
+    ButtonStop.bind(on_press=MusicPlayer.stopmusic )
     # Button Rigth Conf
     a = (ButtonStop.pos[0] + ButtonStop.width + WindowDim.Wsize_X*0.03 , ButtonStop.pos[1])
     ButtonNextLeft= ButtonTemplate(3,a)
@@ -83,20 +93,37 @@ class HomePage(Screen):
     Sense = 'horizontal'
     SongSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.Red.rgba)
     P = ((ButtonNextRight.pos[0] + ButtonNextRight.size[0]) + WindowDim.Wsize_Y*0.02 , ButtonNextLeft.pos[1] )
-    b = WindowDim.Wsize_X*0.92 - (ButtonNextRight.pos[0] + ButtonNextRight.size[0])
+    b = WindowDim.Wsize_X*0.96 - (ButtonNextRight.pos[0] + ButtonNextRight.size[0])
     Sz = (b , ButtonNextRight.size[1]/2 )
     VolSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.DarkBlue.rgba)
     #Create Label Vol and Song Tarcker
-    LabelVolBackground = Label(
+    LabelVolTitle = Label(
         pos = (VolSliderLayout.pos[0] ,VolSliderLayout.pos[1] + VolSliderLayout.size[1] + WindowDim.Wsize_Y*0.01), 
-        size = (VolSliderLayout.size[0],ButtonNextLeft.size[1]/2)
+        size = (VolSliderLayout.size[0],ButtonNextLeft.size[1]/2),
+        text = 'Vol: 100%',
+        color = ColorList.Black.rgba,
+        size_hint = (None,None),
+        font_size = '20sp'
+    )
+    LabelVolBackground = Label(
+        pos = LabelVolTitle.pos, 
+        size = LabelVolTitle.size
     )
     with LabelVolBackground.canvas:
         Color(rgba = ColorList.LightBlue.CanvasRGBA )
         Rectangle(pos=LabelVolBackground.pos, size=LabelVolBackground.size)
-    LabelSongTrackBackground = Label(
+    
+    LabelSongTrackTitle = Label(
         pos = (VolSliderLayout.pos[0] ,SongSliderLayout.pos[1]), 
-        size = (LabelVolBackground.size[0], SongSliderLayout.size[1]) 
+        size = (LabelVolBackground.size[0], SongSliderLayout.size[1]),
+        text = '0:00/0:00',
+        color = ColorList.Black.rgba,
+        size_hint = (None,None),
+        font_size = '20sp'
+    )
+    LabelSongTrackBackground = Label(
+        pos = LabelSongTrackTitle.pos, 
+        size = LabelSongTrackTitle.size
     )
     with LabelSongTrackBackground.canvas:
         Color(rgba = ColorList.LightBlue.CanvasRGBA )
@@ -113,9 +140,12 @@ class HomePage(Screen):
     layout.add_widget(ButtonNextLeft)
     layout.add_widget(SongSliderLayout)
     layout.add_widget(VolSliderLayout)
-    layout.add_widget(LabelVolBackground)
     layout.add_widget(LabelSongTrackBackground)
+    layout.add_widget(LabelSongTrackTitle)
+    layout.add_widget(LabelVolBackground)
+    layout.add_widget(LabelVolTitle)
     
+
     def __init__(self, **kw):    
         super(HomePage,self).__init__(**kw)
         self.add_widget(self.layout)
