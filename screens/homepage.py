@@ -48,7 +48,6 @@ class HomePage(Screen):
     with TabbedPanelTitleBackground.canvas:
         Color(rgba = ColorList.BlueIvy.CanvasRGBA )
         Rectangle(pos=TabbedPanelTitleBackground.pos, size=TabbedPanelTitleBackground.size)
-    
     #Create Body Background
     LabelBodyBackground = Label(
         pos = (WindowDim.Wsize_X*0.01 ,WindowDim.Wsize_Y*0.27), 
@@ -65,26 +64,28 @@ class HomePage(Screen):
     with LabelFooterBackground.canvas:
         Color(rgba = ColorList.MarbleBlue.CanvasRGBA )
         Rectangle(pos=LabelFooterBackground.pos, size=LabelFooterBackground.size)
-    
     ##########################Creatr Button Layout################################## 
     MusicPlayer = MPS()
     ## Button Play Configuration
     a = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.02 )
     ButtonPlay = ButtonTemplate(0, a)
-    ButtonPlay.bind(on_press=MusicPlayer.playmusic )
+    ButtonPlay.ButtonD.bind(on_press= MusicPlayer.playmusic )
+    #ButtonPlay.add_widget(ButtonPlay.ButtonD)
     # Button Pause Conf
     a = (ButtonPlay.pos[0] + ButtonPlay.width + WindowDim.Wsize_X*0.01 , ButtonPlay.pos[1])
     ButtonPause = ButtonTemplate(1, a)
     # Button Stop Conf
     a = (ButtonPause.pos[0] + ButtonPause.width + WindowDim.Wsize_X*0.01 , ButtonPause.pos[1])
     ButtonStop = ButtonTemplate(2,a)
-    ButtonStop.bind(on_press=MusicPlayer.stopmusic )
+    #ButtonStop.ButtonD.bind(on_press=MusicPlayer.stopmusic )
     # Button Rigth Conf
     a = (ButtonStop.pos[0] + ButtonStop.width + WindowDim.Wsize_X*0.03 , ButtonStop.pos[1])
     ButtonNextLeft= ButtonTemplate(3,a)
+    #ButtonNextLeft.bind(on_press=MusicPlayer.LeftButton )
     # Button Left Conf
     a = (ButtonNextLeft.pos[0] + ButtonNextLeft.width + WindowDim.Wsize_X*0.01 , ButtonNextLeft.pos[1])
     ButtonNextRight = ButtonTemplate(4,a)
+    #ButtonNextRight.bind(on_press=MusicPlayer.RitghButton )
     ########################################################################
     #Create FloatLayout to insert Slider
     b = ButtonNextRight.pos[0] + ButtonNextRight.size[0] - WindowDim.Wsize_X*0.03 
@@ -112,7 +113,6 @@ class HomePage(Screen):
     with LabelVolBackground.canvas:
         Color(rgba = ColorList.LightBlue.CanvasRGBA )
         Rectangle(pos=LabelVolBackground.pos, size=LabelVolBackground.size)
-    
     LabelSongTrackTitle = Label(
         pos = (VolSliderLayout.pos[0] ,SongSliderLayout.pos[1]), 
         size = (LabelVolBackground.size[0], SongSliderLayout.size[1]),
@@ -144,14 +144,18 @@ class HomePage(Screen):
     layout.add_widget(LabelSongTrackTitle)
     layout.add_widget(LabelVolBackground)
     layout.add_widget(LabelVolTitle)
-    
 
     def __init__(self, **kw):    
         super(HomePage,self).__init__(**kw)
         self.add_widget(self.layout)
-        
+        self.stopmusic2()
+
         #self.layout.add_widget(self.FadeButton(on_press=self.fadeAnimation) )
         #self.fadeAnimation()
+
+    def stopmusic2(self):
+        print("Stop Music")
+        return 1
 
     '''
     def fadeAnimation(self):

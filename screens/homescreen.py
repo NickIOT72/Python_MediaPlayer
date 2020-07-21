@@ -8,5 +8,5 @@ class HomeScreen(Screen):
 
     def __init__(self, **kw):
         super(HomeScreen,self).__init__(**kw)
-        self.add_widget(HomePage.layout)
+        self.add_widget(HomePage(name="HomePage"))
 

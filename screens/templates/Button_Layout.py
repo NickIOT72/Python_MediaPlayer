@@ -18,6 +18,8 @@ from PIL import Image
 
 class ButtonTemplate(FloatLayout):
 
+    ButtonD = Button()
+
     def __init__(self, PathNum, a , **kw):
         super(ButtonTemplate, self).__init__(**kw)
         self.pos = a
@@ -80,7 +82,7 @@ class ButtonTemplate(FloatLayout):
         # resize image
         new_image = im.resize(newsize)
         new_image.save(PathArray[PathNum][3])
-        ButtonD = Button(
+        self.ButtonD = Button(
             size_hint = (None,None),
             size = self.size,
             pos_hint = self.pos_hint,
@@ -88,4 +90,4 @@ class ButtonTemplate(FloatLayout):
             background_normal = Path1,
             background_down = Path2
         )
-        self.add_widget(ButtonD)
+        self.add_widget(self.ButtonD)
