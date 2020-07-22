@@ -18,25 +18,28 @@ from PIL import Image
 
 class SliderTemplate(FloatLayout):
 
-    def __init__(self,  Pos, Size,  Sense , TrackColor, **kwargs):
+    def __init__(self,  Pos, Size, **kwargs):
         super(SliderTemplate , self).__init__(**kwargs)
         self.pos = Pos
         self.size = Size
         with self.canvas:
             Color(rgba = ColorList.BlueIvy.CanvasRGBA )
             Rectangle(pos=self.pos, size=self.size)
-        SliderMusic = Slider(
-            value_track=True, 
-            value_track_color=TrackColor,
-            min=0,
-            max=100,
-            value=0,
-            orientation= Sense,
-            size_hint = (None,None),
-            size = self.size,
-            pos_hint = self.pos_hint,
-            pos = self.pos,
-            step = 0.1
-        )
+
+class SliderBar(Slider):
+
+    def __init__(self, FS,  Sense , TrackColor, **kwargs):
+        super(SliderBar, self).__init__(**kwargs)
+        self.value_track=True
+        self.value_track_color=TrackColor
+        self.min=0
+        self.max=100
+        self.value=0
+        self.orientation= Sense
+        self.size_hint = (None,None)
+        self.size = FS.size
+        self.pos_hint = FS.pos_hint
+        self.pos = FS.pos
+        self.step = 0.1
         # Add slider to Flayout
-        self.add_widget(SliderMusic)
+        #self.add_widget(SliderMusic)

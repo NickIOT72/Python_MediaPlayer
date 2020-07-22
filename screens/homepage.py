@@ -16,7 +16,7 @@ import os
 import cv2
 from PIL import Image
 from screens.templates.Button_Layout import ButtonTemplate, ButtonSet
-from screens.templates.Slider_Layout import SliderTemplate
+from screens.templates.Slider_Layout import SliderTemplate, SliderBar
 from screens.music.music import MPS
 import pyaudio
 import wave
@@ -110,7 +110,9 @@ class HomePage(Screen):
     P = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.15 )
     Sz = (b , WindowDim.Wsize_Y*0.07 )
     Sense = 'horizontal'
-    SongSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.Red.rgba)
+    SongSliderLayout = SliderTemplate(P, Sz)
+    SongSlider = SliderBar(SongSliderLayout, Sense, ColorList.Red.rgba)
+    SongSliderLayout.add_widget(SongSlider)
     '''P = ((ButtonNextRight.pos[0] + ButtonNextRight.size[0]) + WindowDim.Wsize_Y*0.02 , ButtonNextLeft.pos[1] )
     b = WindowDim.Wsize_X*0.96 - (ButtonNextRight.pos[0] + ButtonNextRight.size[0])
     Sz = (b , ButtonNextRight.size[1]/2 )
@@ -165,10 +167,11 @@ class HomePage(Screen):
     #layout.add_widget(LabelVolBackground)
     #layout.add_widget(LabelVolTitle)
 
+    SliderSongVal = float
+
     def __init__(self, **kw):    
         super(HomePage,self).__init__(**kw)
         self.add_widget(self.layout)
-        self.stopmusic2()
         MusicSel()
 
         #self.layout.add_widget(self.FadeButton(on_press=self.fadeAnimation) )
@@ -197,6 +200,7 @@ class MusicSel(object):
     SongPos = ''
     timer=''
     PrintTimeSta = True
+    TimeSlider = 0
 
     def __init__(self):
         super(MusicSel, self).__init__()
@@ -225,6 +229,10 @@ class MusicSel(object):
                 MusicSel.Mus = sound
                 MusicSel.Mus.play()
                 MusicSel.Mus.seek(MusicSel.Mus.length -7)
+                HomePage.SongSlider.max = 7.0
+                HomePage.SongSlider.min = 0.0
+                HomePage.SongSlider.value = 0.0
+                HomePage.SliderSongVal = float(7)
                 time.sleep(0.01)
                 #print("Play1")
             elif (MusicSel.Mus) and MusicSel.Mus.state == 'play':
@@ -281,12 +289,12 @@ class MusicSel(object):
     def print_time():
         count = 0
         while MusicSel.PrintTimeSta:
-            if MusicSel.PrintPlay:
-                print("Print Play : True")
-            else:
-                print("Print Pause : False")
-            if MusicSel.PrintPause:
-                print("Print Play : True")
-            else:
-                print("Print Pause : False")
-            time.sleep(2)
+            if (MusicSel.Mus):
+                A = MusicSel.Mus.get_pos() - (MusicSel.Mus.length -7)
+                if A >= 7:
+                    A = 7
+                if A <= 0:
+                    A = 0
+                print("Time: %s " % A)
+                HomePage.SongSlider.value = A
+            time.sleep(0.05)
