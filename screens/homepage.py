@@ -120,11 +120,11 @@ class HomePage(Screen):
     #VolSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.DarkBlue.rgba)
     VolSliderLayout = SliderTemplate(P, Sz)
     VolSlider = SliderBar(VolSliderLayout, Sense, ColorList.DarkBlue.rgba)
-    VolSlider.bind(on_touch_down= lambda x1,x2:MusicSel.SliderVolTouch('A') )
+    VolSlider.bind(on_touch_up= lambda x1,x2:MusicSel.SliderVolTouch('A') )
     VolSliderLayout.add_widget(VolSlider)
 
     ##############################
-    '''
+    
     #Create Label Vol and Song Tarcker
     LabelVolTitle = Label(
         pos = (VolSliderLayout.pos[0] ,VolSliderLayout.pos[1] + VolSliderLayout.size[1] + WindowDim.Wsize_Y*0.01), 
@@ -155,7 +155,7 @@ class HomePage(Screen):
     )
     with LabelSongTrackBackground.canvas:
         Color(rgba = ColorList.LightBlue.CanvasRGBA )
-        Rectangle(pos=LabelSongTrackBackground.pos, size=LabelSongTrackBackground.size)'''
+        Rectangle(pos=LabelSongTrackBackground.pos, size=LabelSongTrackBackground.size)
     # add labels to layout
     layout.add_widget(TabbedPanelTitleBackground)
     layout.add_widget(LabelTitle)
@@ -168,10 +168,10 @@ class HomePage(Screen):
     #layout.add_widget(ButtonNextLeft)
     layout.add_widget(SongSliderLayout)
     layout.add_widget(VolSliderLayout)
-    #layout.add_widget(LabelSongTrackBackground)
-    #layout.add_widget(LabelSongTrackTitle)
-    #layout.add_widget(LabelVolBackground)
-    #layout.add_widget(LabelVolTitle)
+    layout.add_widget(LabelSongTrackBackground)
+    layout.add_widget(LabelSongTrackTitle)
+    layout.add_widget(LabelVolBackground)
+    layout.add_widget(LabelVolTitle)
 
     SliderSongVal = float
 
@@ -182,11 +182,6 @@ class HomePage(Screen):
 
         #self.layout.add_widget(self.FadeButton(on_press=self.fadeAnimation) )
         #self.fadeAnimation()
-
-    def stopmusic2(self):
-        print("Stop Music")
-        return 1
-
     '''
     def fadeAnimation(self):
         self.TabbedPanelTitleBackground.pos = (698,430)
@@ -200,20 +195,17 @@ class HomePage(Screen):
 
 class MusicSel(object):
 
-    PrintPlay = bool
-    PrintPause = bool
-    Mus = ''
-    SongPos = ''
-    timer=''
     PrintTimeSta = True
+    ActionNumber = 0
+    SelectedSong = ''
+    SongLastPos = ''
     RSlider = 0
-    RSliderVol = False
-    RsliderPermission = False
-    RSliderPos = ''
+    RSlider2 = 0
 
     def __init__(self):
         super(MusicSel, self).__init__()
-        self.Mus = ''
+        HomePage.VolSlider.value = 50
+        HomePage.LabelVolTitle.text = "Vol: " + str(HomePage.VolSlider.value) + "%"
         self.timer= threading.Thread(target= MusicSel.print_time)
         self.timer.start()
 
@@ -231,7 +223,15 @@ class MusicSel(object):
         #else:
         #    print("SongPos Empty")
 
-        if True: #not MusicSel.Mus or MusicSel.SongPos or (MusicSel.Mus and (MusicSel.Mus.get_pos() == 0.00) ):
+        if not MusicSel.SelectedSong:
+            MusicSel.ActionNumber = 1
+        else:
+            if MusicSel.SelectedSong.state == 'stop' :
+                MusicSel.ActionNumber = 2
+            else:
+                MusicSel.ActionNumber = 3
+        
+        '''if True: #not MusicSel.Mus or MusicSel.SongPos or (MusicSel.Mus and (MusicSel.Mus.get_pos() == 0.00) ):
             if not MusicSel.Mus :
                 if not (MusicSel.Mus and (not MusicSel.SongPos)  and MusicSel.Mus.state == 'stop'):
                     MusicSel.stopmusic('A')
@@ -240,7 +240,7 @@ class MusicSel(object):
                     MusicSel.Mus = sound
                 MusicSel.Mus.play()
                 
-                MusicSel.Mus.volume = round(float(HomePage.VolSlider.value)/100,2)
+                MusicSel.Mus.volume = 0.5
                 HomePage.SongSlider.max = MusicSel.Mus.length
                 HomePage.SongSlider.min = 0.0
                 HomePage.SongSlider.value = 0.0
@@ -260,10 +260,11 @@ class MusicSel(object):
                 HomePage.ButtonPlay.background_down = path1
                 MusicSel.Mus.seek(MusicSel.SongPos)
                 MusicSel.SongPos = ''
-                print("ButtonState:" % HomePage.ButtonPlay.state)
-                while HomePage.ButtonPlay.state == 'down':
-                    time.sleep(0.01)
-
+                #print("Button Play")
+                #print(HomePage.ButtonPlay.state)
+                #while HomePage.ButtonPlay.state == 'down':
+                #    time.sleep(0.01)'''
+    '''
     @staticmethod
     def pausemusic(a):
         """Stream music with mixer.music module in blocking manner.
@@ -281,16 +282,20 @@ class MusicSel(object):
                 path1 = os.getcwd() + '\screens\images' + '\Pause_Button_Down_2.png'
                 HomePage.ButtonPlay.background_normal = path
                 HomePage.ButtonPlay.background_down = path1
-                print("Button paused")
-                print("ButtonState:" % HomePage.ButtonPlay.state)
-                while HomePage.ButtonPlay.state == 'down':
-                    time.sleep(0.01)
+                #print("Button paused")
+                #print(HomePage.ButtonPlay.state)
+                #while HomePage.ButtonPlay.state == 'down':
+                #    time.sleep(0.01)
                 #MusicSel.Mus = ''
         #print("Error: unable to start thread")
+    '''
 
     @staticmethod
     def stopmusic(a):
-        if MusicSel.Mus:
+        if MusicSel.SelectedSong:
+            MusicSel.ActionNumber = 4
+        
+        '''if MusicSel.Mus:
             MusicSel.Mus.stop()
             MusicSel.Mus = ''
             MusicSel.SongPos = ''
@@ -298,13 +303,16 @@ class MusicSel(object):
             path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
             HomePage.ButtonPlay.background_normal = path
             HomePage.ButtonPlay.background_down = path1
-            HomePage.SongSlider.value = HomePage.SongSlider.min
+            HomePage.SongSlider.value = HomePage.SongSlider.min'''
     
     @staticmethod 
     def SliderTouch(a):
         MusicSel.RSlider = MusicSel.RSlider +1
         if (MusicSel.RSlider >= 1):
-            if (MusicSel.Mus):
+            if (MusicSel.SelectedSong):
+                MusicSel.ActionNumber = 5
+                '''
+                if (MusicSel.Mus):
                 #A = float(HomePage.SongSlider.value)
                 #print("SliderPos: %s" % str(A))
                 #print(MusicSel.Mus.length -7)
@@ -326,43 +334,100 @@ class MusicSel(object):
                 #time.sleep(0.1)
                 #print(MusicSel.Mus.get_pos())
                 #prinst("Pos %s" % A)MusicSel.RSlider = 0
-                MusicSel.RsliderPermission = True
-            else:
-                HomePage.SongSlider.value = 0
+                MusicSel.RsliderPermission = True'''
+            #else:
+            #    HomePage.SongSlider.value = 0
             MusicSel.RSlider = 0
 
     @staticmethod
     def SliderVolTouch(a):
-        if (MusicSel.Mus):
-            MusicSel.RSliderVol = True
+        MusicSel.RSlider2 = MusicSel.RSlider2 + 1
+        if (MusicSel.RSlider2 >= 1):
+            if (MusicSel.SelectedSong):
+                MusicSel.SelectedSong.volume = round(HomePage.VolSlider.value/100,2)
+            MusicSel.RSlider2 = 0
+            
 
     @staticmethod 
     def print_time():
         count = 0
         while MusicSel.PrintTimeSta:
-            if MusicSel.Mus and not MusicSel.SongPos and MusicSel.RSlider == 0 and not MusicSel.RsliderPermission:
-                if (not MusicSel.Mus.state == 'stop' or not MusicSel.Mus.get_pos() == 0.00 ) and MusicSel.Mus:
-                    A = MusicSel.Mus.get_pos()
-                    #print("Time: %s " % A)
-                    HomePage.SongSlider.value = A
-                #else:
-                #    print("State: %s " % MusicSel.Mus.state)
-                #    print("State: %s " % MusicSel.Mus.get_pos())
-                if MusicSel.RSliderVol:
-                    MusicSel.Mus.volume = round(float(HomePage.VolSlider.value)/100,2)
-                    MusicSel.RSliderVol=False
-                time.sleep(0.02)
-            if MusicSel.RsliderPermission and MusicSel.Mus:
-                MusicSel.RSliderPos= HomePage.SongSlider.value
-                if not MusicSel.SongPos and MusicSel.Mus:
-                    #time.sleep(1)
-                    MusicSel.Mus.play()
-                    
-                    MusicSel.Mus.volume = round(float(HomePage.VolSlider.value)/100,2)
-                    MusicSel.Mus.seek(MusicSel.RSliderPos)
-                    #time.sleep(1)
-                    MusicSel.RsliderPermission = False
-                    MusicSel.RSliderPos = ''
-                    #time.sleep(0.1)
+            if (MusicSel.ActionNumber == 1 or MusicSel.ActionNumber == 2 ):
+                MusicSel.PlaySong(MusicSel.ActionNumber)
+            elif (MusicSel.ActionNumber == 3 ):
+                MusicSel.PauseSong()
+            elif (MusicSel.ActionNumber == 4 ):
+                MusicSel.StopSong()
+            elif (MusicSel.ActionNumber == 5 ):
+                MusicSel.SongSliderTracker()
+            MusicSel.ActionNumber = 0
+            HomePage.LabelVolTitle.text = "Vol: " + str(int(HomePage.VolSlider.value)) + "%"
+            if (MusicSel.SelectedSong):
+                HomePage.LabelSongTrackTitle.text =(str(int(HomePage.SongSlider.value/60)).zfill(2)
+                + ":" + str(int(HomePage.SongSlider.value%60)).zfill(2) + ":"
+                + str(int(HomePage.SongSlider.max/60)).zfill(2) + ":" 
+                + str(int(HomePage.SongSlider.max%60)).zfill(2)) 
+            else:
+                HomePage.LabelSongTrackTitle.text = "0:00/0:00"
+            if (MusicSel.SelectedSong):
+                if MusicSel.SelectedSong.state == 'play':
+                    HomePage.SongSlider.value = MusicSel.SelectedSong.get_pos()
                 else:
-                    MusicSel.SongPos = MusicSel.RSliderPos
+                    if (MusicSel.SongLastPos):
+                        HomePage.SongSlider.value = MusicSel.SongLastPos
+            
+            time.sleep(0.01)
+    
+    @staticmethod 
+    def PlaySong(a):
+        #MusicSel.stopmusic('A')
+        if (a == 2):
+            MusicSel.SelectedSong.stop()
+            if (MusicSel.ActionNumber == 2):
+                path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
+                path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
+                HomePage.ButtonPlay.background_normal = path
+                HomePage.ButtonPlay.background_down = path1
+        if (a == 1):
+            path = os.getcwd() + '\screens\music\myfile.wav'
+            sound = SoundLoader.load(path)
+            MusicSel.SelectedSong = sound
+        MusicSel.SelectedSong.play()
+        if (a == 2):
+            if MusicSel.SongLastPos:
+                MusicSel.SelectedSong.seek(MusicSel.SongLastPos)
+                MusicSel.SongLastPos = ''
+        MusicSel.SelectedSong.volume = round(HomePage.VolSlider.value/100,2)
+        if (a == 1):
+            HomePage.SongSlider.max = MusicSel.SelectedSong.length
+            HomePage.SongSlider.min = 0.0
+            HomePage.SongSlider.value = 0.0
+            #time.sleep(0.01)
+
+    @staticmethod 
+    def PauseSong():
+        MusicSel.SongLastPos = MusicSel.SelectedSong.get_pos()
+        MusicSel.SelectedSong.stop()
+        path = os.getcwd() + '\screens\images' + '\Pause_Button_Normal_2.png'
+        path1 = os.getcwd() + '\screens\images' + '\Pause_Button_Down_2.png'
+        HomePage.ButtonPlay.background_normal = path
+        HomePage.ButtonPlay.background_down = path1
+    
+    @staticmethod 
+    def StopSong():
+        MusicSel.SelectedSong.stop()
+        MusicSel.SelectedSong = ''
+        MusicSel.SongLastPos = ''
+        path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
+        path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
+        HomePage.ButtonPlay.background_normal = path
+        HomePage.ButtonPlay.background_down = path1
+        HomePage.SongSlider.value = HomePage.SongSlider.min
+    
+    @staticmethod 
+    def SongSliderTracker():
+        MusicSel.SongLastPos = HomePage.SongSlider.value
+        if not MusicSel.SelectedSong.state == 'stop':
+            MusicSel.PlaySong(2)
+        
+        
