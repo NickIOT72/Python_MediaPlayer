@@ -33,5 +33,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print ('No exception occurred 1')
         MusicSel.PrintTimeSta = False
-        time.sleep(2)
+        #time.sleep(2)
         sys.exit(0)
