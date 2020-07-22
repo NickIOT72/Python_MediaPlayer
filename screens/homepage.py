@@ -74,38 +74,49 @@ class HomePage(Screen):
     ButtonPlay.bind(on_press=lambda x:MusicSel.playmusic('A') )
     ButtonPlayLayout.add_widget(ButtonPlay)
     ## Button Stop Configuration
-    a = (ButtonPlayLayout.pos[0] + ButtonPlayLayout.width + WindowDim.Wsize_X*0.01 , ButtonPlayLayout.pos[1])
-    ButtonPauseLayout = ButtonTemplate( a)
-    ButtonPause = ButtonSet(1, ButtonPauseLayout)
-    ButtonPause.bind(on_press=lambda x:MusicSel.stopmusic('B') )
-    ButtonPauseLayout.add_widget(ButtonPause)
+    #a = (ButtonPlayLayout.pos[0] + ButtonPlayLayout.width + WindowDim.Wsize_X*0.01 , ButtonPlayLayout.pos[1])
+    #ButtonPauseLayout = ButtonTemplate( a)
+    #ButtonPause = ButtonSet(1, ButtonPauseLayout)
+    #ButtonPause.bind(on_press=lambda x:MusicSel.stopmusic('B') )
+    #ButtonPauseLayout.add_widget(ButtonPause)
     #ButtonPlay.add_widget(ButtonPlay.ButtonD)
     # Button Pause Conf
-    '''a = (ButtonPlay.pos[0] + ButtonPlay.width + WindowDim.Wsize_X*0.01 , ButtonPlay.pos[1])
-    ButtonPause = ButtonTemplate(1, a)
+    #a = (ButtonPlayLayout.pos[0] + ButtonPlayLayout.width + WindowDim.Wsize_X*0.01 , ButtonPlayLayout.pos[1])
+    #ButtonPause = ButtonTemplate(1, a)
     # Button Stop Conf
-    a = (ButtonPause.pos[0] + ButtonPause.width + WindowDim.Wsize_X*0.01 , ButtonPause.pos[1])
-    ButtonStop = ButtonTemplate(2,a)
+    a = (ButtonPlayLayout.pos[0] + ButtonPlayLayout.width + WindowDim.Wsize_X*0.01 , ButtonPlayLayout.pos[1])
+    ButtonStopLayout = ButtonTemplate( a)
+    ButtonStop = ButtonSet(2, ButtonStopLayout)
+    ButtonStop.bind(on_press=lambda x:MusicSel.stopmusic('A') )
+    ButtonStopLayout.add_widget(ButtonStop)
     #ButtonStop.ButtonD.bind(on_press=MusicPlayer.stopmusic )
     # Button Rigth Conf
-    a = (ButtonStop.pos[0] + ButtonStop.width + WindowDim.Wsize_X*0.03 , ButtonStop.pos[1])
-    ButtonNextLeft= ButtonTemplate(3,a)
+    a = (ButtonStopLayout.pos[0] + 2*ButtonStopLayout.width + 2*WindowDim.Wsize_X*0.03 , ButtonStopLayout.pos[1])
+    ButtonNextLeftLayout = ButtonTemplate( a)
+    ButtonNextLeft = ButtonSet(2, ButtonNextLeftLayout)
+    ##ButtonNextLeft.bind(on_press=lambda x:MusicSel.NextLeftmusic('A') )
+    ButtonNextLeftLayout.add_widget(ButtonNextLeft)
     #ButtonNextLeft.bind(on_press=MusicPlayer.LeftButton )
     # Button Left Conf
-    a = (ButtonNextLeft.pos[0] + ButtonNextLeft.width + WindowDim.Wsize_X*0.01 , ButtonNextLeft.pos[1])
-    ButtonNextRight = ButtonTemplate(4,a)
+    a = (ButtonNextLeftLayout.pos[0] + ButtonNextLeftLayout.width + WindowDim.Wsize_X*0.01 , ButtonNextLeftLayout.pos[1])
+    ButtonNextRightLayout = ButtonTemplate( a)
+    ButtonNextRight = ButtonSet(2, ButtonNextRightLayout)
+    ButtonNextRight.bind(on_press=lambda x:MusicSel.NextRightmusic('A') )
+    ButtonNextRightLayout.add_widget(ButtonNextRight)
     #ButtonNextRight.bind(on_press=MusicPlayer.RitghButton )
     ########################################################################
     #Create FloatLayout to insert Slider
-    b = ButtonNextRight.pos[0] + ButtonNextRight.size[0] - WindowDim.Wsize_X*0.03 
+    b = ButtonNextRightLayout.pos[0] + ButtonNextRightLayout.size[0] - WindowDim.Wsize_X*0.03 
     P = (WindowDim.Wsize_X*0.03 , WindowDim.Wsize_Y*0.15 )
     Sz = (b , WindowDim.Wsize_Y*0.07 )
     Sense = 'horizontal'
     SongSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.Red.rgba)
-    P = ((ButtonNextRight.pos[0] + ButtonNextRight.size[0]) + WindowDim.Wsize_Y*0.02 , ButtonNextLeft.pos[1] )
+    '''P = ((ButtonNextRight.pos[0] + ButtonNextRight.size[0]) + WindowDim.Wsize_Y*0.02 , ButtonNextLeft.pos[1] )
     b = WindowDim.Wsize_X*0.96 - (ButtonNextRight.pos[0] + ButtonNextRight.size[0])
     Sz = (b , ButtonNextRight.size[1]/2 )
     VolSliderLayout = SliderTemplate(P, Sz, Sense, ColorList.DarkBlue.rgba)
+    ##############################
+    
     #Create Label Vol and Song Tarcker
     LabelVolTitle = Label(
         pos = (VolSliderLayout.pos[0] ,VolSliderLayout.pos[1] + VolSliderLayout.size[1] + WindowDim.Wsize_Y*0.01), 
@@ -143,11 +154,11 @@ class HomePage(Screen):
     layout.add_widget(LabelBodyBackground)
     layout.add_widget(LabelFooterBackground)
     layout.add_widget(ButtonPlayLayout)
-    layout.add_widget(ButtonPauseLayout)
-    #layout.add_widget(ButtonStop)
+    #layout.add_widget(ButtonPauseLayout)
+    layout.add_widget(ButtonStopLayout)
     #layout.add_widget(ButtonNextRight)
     #layout.add_widget(ButtonNextLeft)
-    #layout.add_widget(SongSliderLayout)
+    layout.add_widget(SongSliderLayout)
     #layout.add_widget(VolSliderLayout)
     #layout.add_widget(LabelSongTrackBackground)
     #layout.add_widget(LabelSongTrackTitle)
@@ -183,49 +194,93 @@ class MusicSel(object):
     PrintPlay = bool
     PrintPause = bool
     Mus = ''
+    SongPos = ''
+    timer=''
+    PrintTimeSta = True
 
     def __init__(self):
         super(MusicSel, self).__init__()
         self.Mus = ''
-        #t = threading.Thread(name = "Timer" , target = self.print_time('Thr',2))
-        #t.setDaemon(True)
-        #t.start()
+        self.timer= threading.Thread(target= MusicSel.print_time)
+        self.timer.start()
 
+    print ('Caught KeyboardInterrupt')
     @staticmethod
     def playmusic(a):
         """Stream music with mixer.music module in blocking manner.
            This will stream the sound from disk while playing.
         """
-        if not MusicSel.Mus:
-            path = os.getcwd() + '\screens\music\myfile.wav'
-            sound = SoundLoader.load(path)
-            MusicSel.Mus = sound
-            print(MusicSel.Mus)
-            if MusicSel.Mus and MusicSel.Mus.state == 'stop' :
-                print("Sound found at %s" % MusicSel.Mus.source)
-                print("Sound is %.3f seconds" % MusicSel.Mus.length)
+        if (MusicSel.Mus):
+            print("State: %s" % MusicSel.Mus)
+            print("State %s" % MusicSel.Mus.state)
+        if (MusicSel.SongPos):
+            print("Pos: %s" % MusicSel.SongPos)
+        else:
+            print("SongPos Empty")
+
+        if True: #not MusicSel.Mus or MusicSel.SongPos or (MusicSel.Mus and (MusicSel.Mus.get_pos() == 0.00) ):
+            if not MusicSel.Mus or (MusicSel.Mus and (not MusicSel.SongPos)  and MusicSel.Mus.state == 'stop') :
+                path = os.getcwd() + '\screens\music\myfile.wav'
+                sound = SoundLoader.load(path)
+                MusicSel.Mus = sound
                 MusicSel.Mus.play()
-            else:
-                print("Error")
+                MusicSel.Mus.seek(MusicSel.Mus.length -7)
+                time.sleep(0.01)
+                #print("Play1")
+            elif (MusicSel.Mus) and MusicSel.Mus.state == 'play':
+                MusicSel.pausemusic('h')
+            elif (MusicSel.Mus and MusicSel.Mus.state == 'stop'):
+                if not MusicSel.SongPos and (MusicSel.Mus.get_pos() == 0.00) :
+                    MusicSel.Mus.stop()
+                    MusicSel.Mus = ''
+                    MusicSel.SongPos = ''
+                else:
+                    #print("Sound found at %s" % MusicSel.Mus.source)
+                    #print("Sound is %.3f seconds" % MusicSel.Mus.length)
+                    MusicSel.Mus.play()
+                    path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
+                    path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
+                    HomePage.ButtonPlay.background_normal = path
+                    HomePage.ButtonPlay.background_down = path1
+                if MusicSel.SongPos:
+                    MusicSel.Mus.seek(MusicSel.SongPos)
+                    MusicSel.SongPos = ''
 
     @staticmethod
-    def stopmusic(a):
+    def pausemusic(a):
         """Stream music with mixer.music module in blocking manner.
            This will stream the sound from disk while playing.
         """
         if MusicSel.Mus:
-            print(MusicSel.Mus.state)
+            #print(MusicSel.Mus.state)
             if MusicSel.Mus.state == 'play':
-                print("Sound found at %s" % MusicSel.Mus.source)
-                print("Stopped")
+                #print("Sound found at %s" % MusicSel.Mus.source)
+                #print("Stopped")
+                MusicSel.SongPos = MusicSel.Mus.get_pos()
+                #print("Time: %s " % MusicSel.SongPos)
                 MusicSel.Mus.stop()
-                MusicSel.Mus = ''
+                path = os.getcwd() + '\screens\images' + '\Pause_Button_Normal_2.png'
+                path1 = os.getcwd() + '\screens\images' + '\Pause_Button_Down_2.png'
+                HomePage.ButtonPlay.background_normal = path
+                HomePage.ButtonPlay.background_down = path1
+                #MusicSel.Mus = ''
         #print("Error: unable to start thread")
 
+    @staticmethod
+    def stopmusic(a):
+        if MusicSel.Mus:
+            MusicSel.Mus.stop()
+            MusicSel.Mus = ''
+            MusicSel.SongPos = ''
+            path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
+            path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
+            HomePage.ButtonPlay.background_normal = path
+            HomePage.ButtonPlay.background_down = path1
+    
     @staticmethod 
-    def print_time( threadName, delay):
+    def print_time():
         count = 0
-        while True:
+        while MusicSel.PrintTimeSta:
             if MusicSel.PrintPlay:
                 print("Print Play : True")
             else:
@@ -234,4 +289,4 @@ class MusicSel(object):
                 print("Print Play : True")
             else:
                 print("Print Pause : False")
-            time.sleep(delay)
+            time.sleep(2)

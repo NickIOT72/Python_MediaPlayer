@@ -30,12 +30,13 @@ class SliderTemplate(FloatLayout):
             value_track_color=TrackColor,
             min=0,
             max=100,
-            value=25,
+            value=0,
             orientation= Sense,
             size_hint = (None,None),
             size = self.size,
             pos_hint = self.pos_hint,
-            pos = self.pos
+            pos = self.pos,
+            step = 0.1
         )
         # Add slider to Flayout
         self.add_widget(SliderMusic)

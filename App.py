@@ -7,11 +7,12 @@ from kivy.uix.screenmanager import ScreenManager, Screen # Set Screenmanahger to
 import os
 import threading
 import time
+import sys
 
 ########## Import files############
 from screens.myscreenmanager import MyScreenManager
 from screens.templates.Windows_Dim import  WindowDim
-
+from screens.homepage import MusicSel
 ######### Code ############
 class MusicPlayerApp(App):
 
@@ -27,5 +28,10 @@ def print_time( threadName, delay):
       print("%s: %s" % ( threadName, time.ctime(time.time()) )) 
 
 if __name__ == "__main__":
-    
-    MusicPlayerApp().run()
+    try:
+        MusicPlayerApp().run()
+    except KeyboardInterrupt:
+        print ('No exception occurred 1')
+        MusicSel.PrintTimeSta = False
+        time.sleep(2)
+        sys.exit(0)
