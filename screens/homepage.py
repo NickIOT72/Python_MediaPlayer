@@ -26,6 +26,8 @@ from pygame import mixer
 import threading
 import time
 from kivy.core.audio import SoundLoader
+import tkinter as tk
+from tkinter import filedialog
 #04246134112
 #04146210791
 
@@ -56,7 +58,7 @@ class HomePage(Screen):
         size = (WindowDim.Wsize_X*0.98,WindowDim.Wsize_Y*0.6)
     )
     with LabelBodyBackground.canvas:
-        Color(rgba = ColorList.BlueIvy.CanvasRGBA )
+        Color(rgba = ColorList.MarbleBlue.CanvasRGBA )
         Rectangle(pos=LabelBodyBackground.pos, size=LabelBodyBackground.size)
     #Create Footer Background
     LabelFooterBackground = Label(
@@ -104,6 +106,30 @@ class HomePage(Screen):
     ButtonNextRight.bind(on_press=lambda x:MusicSel.NextRightmusic('A') )
     ButtonNextRightLayout.add_widget(ButtonNextRight)
     #ButtonNextRight.bind(on_press=MusicPlayer.RitghButton )
+    # Button Search
+    a = (ButtonPlayLayout.pos[0] + WindowDim.Wsize_X*0.01 , LabelBodyBackground.pos[1] + LabelBodyBackground.size[1] 
+        - ButtonPlayLayout.size[1] - WindowDim.Wsize_Y*0.01  )
+    ButtonSearchLayout = ButtonTemplate( a)
+    ButtonSearch = ButtonSet(5, ButtonSearchLayout)
+    ButtonSearch.bind(on_press=lambda x:MusicSel.Searchmusic('A') )
+    ButtonSearchLayout.add_widget(ButtonSearch)
+    #Create SearchTitle Background
+    LabelSearchTitleBackground = Label(
+        pos = (ButtonSearchLayout.pos[0] + ButtonSearchLayout.size[0] + WindowDim.Wsize_X*0.01, 
+            ButtonSearchLayout.pos[1] ), 
+        size = ( WindowDim.Wsize_Y*0.9 , ButtonSearchLayout.size[1])
+    )
+    with LabelSearchTitleBackground.canvas:
+        Color(rgba = ColorList.BlueIvy.CanvasRGBA )
+        Rectangle(pos=LabelSearchTitleBackground.pos, size=LabelSearchTitleBackground.size)
+    #Create Title Label 
+    SearchLabelTitle = Label(
+        text = '<- Select Song', 
+        color = ColorList.White.rgba,
+        pos = LabelSearchTitleBackground.pos, 
+        size = LabelSearchTitleBackground.size,
+        size_hint = (None,None),
+        font_size = '30sp')
     ########################################################################
     #Create FloatLayout to insert Slider
     b = ButtonNextRightLayout.pos[0] + ButtonNextRightLayout.size[0] - WindowDim.Wsize_X*0.03 
@@ -166,12 +192,15 @@ class HomePage(Screen):
     layout.add_widget(ButtonStopLayout)
     #layout.add_widget(ButtonNextRight)
     #layout.add_widget(ButtonNextLeft)
+    layout.add_widget(ButtonSearchLayout)
     layout.add_widget(SongSliderLayout)
     layout.add_widget(VolSliderLayout)
     layout.add_widget(LabelSongTrackBackground)
     layout.add_widget(LabelSongTrackTitle)
     layout.add_widget(LabelVolBackground)
     layout.add_widget(LabelVolTitle)
+    layout.add_widget(LabelSearchTitleBackground)
+    layout.add_widget(SearchLabelTitle)
 
     SliderSongVal = float
 
@@ -201,6 +230,7 @@ class MusicSel(object):
     SongLastPos = ''
     RSlider = 0
     RSlider2 = 0
+    file_path = ''
 
     def __init__(self):
         super(MusicSel, self).__init__()
@@ -212,98 +242,19 @@ class MusicSel(object):
     #print ('Caught KeyboardInterrupt')
     @staticmethod
     def playmusic(a):
-        """Stream music with mixer.music module in blocking manner.
-           This will stream the sound from disk while playing.
-        """
-        #if (MusicSel.Mus):
-        #    print("State: %s" % MusicSel.Mus)
-        #    print("State %s" % MusicSel.Mus.state)
-        #if (MusicSel.SongPos):
-        #    print("Pos: %s" % MusicSel.SongPos)
-        #else:
-        #    print("SongPos Empty")
-
-        if not MusicSel.SelectedSong:
-            MusicSel.ActionNumber = 1
-        else:
-            if MusicSel.SelectedSong.state == 'stop' :
-                MusicSel.ActionNumber = 2
+        if (MusicSel.file_path):
+            if not MusicSel.SelectedSong:
+                MusicSel.ActionNumber = 1
             else:
-                MusicSel.ActionNumber = 3
-        
-        '''if True: #not MusicSel.Mus or MusicSel.SongPos or (MusicSel.Mus and (MusicSel.Mus.get_pos() == 0.00) ):
-            if not MusicSel.Mus :
-                if not (MusicSel.Mus and (not MusicSel.SongPos)  and MusicSel.Mus.state == 'stop'):
-                    MusicSel.stopmusic('A')
-                    path = os.getcwd() + '\screens\music\myfile.wav'
-                    sound = SoundLoader.load(path)
-                    MusicSel.Mus = sound
-                MusicSel.Mus.play()
-                
-                MusicSel.Mus.volume = 0.5
-                HomePage.SongSlider.max = MusicSel.Mus.length
-                HomePage.SongSlider.min = 0.0
-                HomePage.SongSlider.value = 0.0
-                time.sleep(0.01)
-                #print("Play1")
-            elif (MusicSel.Mus) and MusicSel.Mus.state == 'play':
-                MusicSel.pausemusic('h')
-            elif (MusicSel.Mus and MusicSel.Mus.state == 'stop' and MusicSel.SongPos ):
-                #print("Sound found at %s" % MusicSel.Mus.source)
-                #print("Sound is %.3f seconds" % MusicSel.Mus.length)
-                MusicSel.Mus.play()
-                
-                MusicSel.Mus.volume = round(float(HomePage.VolSlider.value)/100,2)
-                path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
-                path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
-                HomePage.ButtonPlay.background_normal = path
-                HomePage.ButtonPlay.background_down = path1
-                MusicSel.Mus.seek(MusicSel.SongPos)
-                MusicSel.SongPos = ''
-                #print("Button Play")
-                #print(HomePage.ButtonPlay.state)
-                #while HomePage.ButtonPlay.state == 'down':
-                #    time.sleep(0.01)'''
-    '''
-    @staticmethod
-    def pausemusic(a):
-        """Stream music with mixer.music module in blocking manner.
-           This will stream the sound from disk while playing.
-        """
-        if MusicSel.Mus:
-            #print(MusicSel.Mus.state)
-            if MusicSel.Mus.state == 'play':
-                #print("Sound found at %s" % MusicSel.Mus.source)
-                #print("Stopped")
-                MusicSel.SongPos = MusicSel.Mus.get_pos()
-                #print("Time: %s " % MusicSel.SongPos)
-                MusicSel.Mus.stop()
-                path = os.getcwd() + '\screens\images' + '\Pause_Button_Normal_2.png'
-                path1 = os.getcwd() + '\screens\images' + '\Pause_Button_Down_2.png'
-                HomePage.ButtonPlay.background_normal = path
-                HomePage.ButtonPlay.background_down = path1
-                #print("Button paused")
-                #print(HomePage.ButtonPlay.state)
-                #while HomePage.ButtonPlay.state == 'down':
-                #    time.sleep(0.01)
-                #MusicSel.Mus = ''
-        #print("Error: unable to start thread")
-    '''
-
+                if MusicSel.SelectedSong.state == 'stop' :
+                    MusicSel.ActionNumber = 2
+                else:
+                    MusicSel.ActionNumber = 3
+  
     @staticmethod
     def stopmusic(a):
         if MusicSel.SelectedSong:
             MusicSel.ActionNumber = 4
-        
-        '''if MusicSel.Mus:
-            MusicSel.Mus.stop()
-            MusicSel.Mus = ''
-            MusicSel.SongPos = ''
-            path = os.getcwd() + '\screens\images' + '\PlayButton_Down_2.png'
-            path1 = os.getcwd() + '\screens\images' + '\PlayButton_On_2.png'
-            HomePage.ButtonPlay.background_normal = path
-            HomePage.ButtonPlay.background_down = path1
-            HomePage.SongSlider.value = HomePage.SongSlider.min'''
     
     @staticmethod 
     def SliderTouch(a):
@@ -311,30 +262,6 @@ class MusicSel(object):
         if (MusicSel.RSlider >= 1):
             if (MusicSel.SelectedSong):
                 MusicSel.ActionNumber = 5
-                '''
-                if (MusicSel.Mus):
-                #A = float(HomePage.SongSlider.value)
-                #print("SliderPos: %s" % str(A))
-                #print(MusicSel.Mus.length -7)
-                #print(MusicSel.Mus.get_pos())
-                #B = float(MusicSel.Mus.get_pos() - (MusicSel.Mus.length -7))
-                #print("SliderPos2: %s" % str(B))
-                if not MusicSel.SongPos:
-                    MusicSel.Mus.stop()
-                #if A >= 7:
-                #    A = 7
-                #if A <= 0:
-                #    A = 0
-                MusicSel.RSliderPos = 1.2
-                #print("SliderPos3: %s" % str(A))
-                #time.sleep(0.1)
-                #MusicSel.Mus.play()
-                #MusicSel.Mus.volume = 0.5 -round(float(HomePage.VolSlider.value)/100,2)
-                #MusicSel.Mus.seek(A)
-                #time.sleep(0.1)
-                #print(MusicSel.Mus.get_pos())
-                #prinst("Pos %s" % A)MusicSel.RSlider = 0
-                MusicSel.RsliderPermission = True'''
             #else:
             #    HomePage.SongSlider.value = 0
             MusicSel.RSlider = 0
@@ -346,7 +273,25 @@ class MusicSel(object):
             if (MusicSel.SelectedSong):
                 MusicSel.SelectedSong.volume = round(HomePage.VolSlider.value/100,2)
             MusicSel.RSlider2 = 0
-            
+    
+    @staticmethod
+    def Searchmusic(a):
+        root = tk.Tk()
+        root.withdraw()
+        MusicSel.file_path = str(filedialog.askopenfilename())
+        print(MusicSel.file_path)
+        if (MusicSel.file_path):
+            SongFormat = MusicSel.file_path.split(".")
+            if (SongFormat[len(SongFormat) -1] == "wav"):
+                print("Es wav")
+                y = MusicSel.file_path.split("/")
+                y1 = y[len(y) -1]
+                y2 = y1.split(".")
+                filename = y2[0]
+                HomePage.SearchLabelTitle.text = "File: " + filename
+                MusicSel.ActionNumber = 1
+            else:
+                MusicSel.file_path=''
 
     @staticmethod 
     def print_time():
@@ -360,7 +305,8 @@ class MusicSel(object):
                 MusicSel.StopSong()
             elif (MusicSel.ActionNumber == 5 ):
                 MusicSel.SongSliderTracker()
-            MusicSel.ActionNumber = 0
+            if not (MusicSel.ActionNumber == 0):
+                MusicSel.ActionNumber = 0
             HomePage.LabelVolTitle.text = "Vol: " + str(int(HomePage.VolSlider.value)) + "%"
             if (MusicSel.SelectedSong):
                 HomePage.LabelSongTrackTitle.text =(str(int(HomePage.SongSlider.value/60)).zfill(2)
@@ -389,7 +335,7 @@ class MusicSel(object):
                 HomePage.ButtonPlay.background_normal = path
                 HomePage.ButtonPlay.background_down = path1
         if (a == 1):
-            path = os.getcwd() + '\screens\music\myfile.wav'
+            path = MusicSel.file_path
             sound = SoundLoader.load(path)
             MusicSel.SelectedSong = sound
         MusicSel.SelectedSong.play()
@@ -429,5 +375,4 @@ class MusicSel(object):
         MusicSel.SongLastPos = HomePage.SongSlider.value
         if not MusicSel.SelectedSong.state == 'stop':
             MusicSel.PlaySong(2)
-        
         

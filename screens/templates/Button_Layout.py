@@ -60,13 +60,19 @@ class ButtonSet(Button):
         ButtonStopPath1 = path + '\Stop_Button_Normal_2.png'
         ButtonStopPath2 = path + '\Stop_Button_Down.png'
         ButtonStopPath3 = path + '\Stop_Button_Down_2.png'
+        ######## Search Button
+        ButtonSearchPath0 = path + '\Search_Button_Normal.png'
+        ButtonSearchPath1 = path + '\Search_Button_Normal_2.png'
+        ButtonSearchPath2 = path + '\Search_Button_Down.png'
+        ButtonSearchPath3 = path + '\Search_Button_Down_2.png'
         ############## Path Array
         PathArray = [
             [ButtonPlayPath0, ButtonPlayPath1, ButtonPlayPath2, ButtonPlayPath3],
             [ButtonPausePath0, ButtonPausePath1, ButtonPausePath2, ButtonPausePath3],
             [ButtonStopPath0, ButtonStopPath1, ButtonStopPath2, ButtonStopPath3],
             [ButtonNextRightPath0, ButtonNextRightPath1, ButtonNextRightPath2, ButtonNextRightPath3],
-            [ButtonNextLeftPath0, ButtonNextLeftPath1, ButtonNextLeftPath2, ButtonNextLeftPath3]
+            [ButtonNextLeftPath0, ButtonNextLeftPath1, ButtonNextLeftPath2, ButtonNextLeftPath3],
+            [ButtonSearchPath0, ButtonSearchPath1, ButtonSearchPath2, ButtonSearchPath3]
         ]
         #############
         #PathNum = 0
